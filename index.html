@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Le Niger sur le Web_demo</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/CommunesduNiger_1.js"></script>
+        <script src="data/PopulationdeTahoua_2.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ff0004',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ff0004',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        map.createPane('pane_OSMStandard_0');
+        map.getPane('pane_OSMStandard_0').style.zIndex = 400;
+        var layer_OSMStandard_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OSMStandard_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OSMStandard_0;
+        map.addLayer(layer_OSMStandard_0);
+        function pop_CommunesduNiger_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJECTID</th>\
+                        <td>' + (feature.properties['OBJECTID'] !== null ? autolinker.link(feature.properties['OBJECTID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ID</th>\
+                        <td>' + (feature.properties['ID'] !== null ? autolinker.link(feature.properties['ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NOM_COM</th>\
+                        <td>' + (feature.properties['NOM_COM'] !== null ? autolinker.link(feature.properties['NOM_COM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">adm_01</th>\
+                        <td>' + (feature.properties['adm_01'] !== null ? autolinker.link(feature.properties['adm_01'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">adm_02</th>\
+                        <td>' + (feature.properties['adm_02'] !== null ? autolinker.link(feature.properties['adm_02'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">adm_03</th>\
+                        <td>' + (feature.properties['adm_03'] !== null ? autolinker.link(feature.properties['adm_03'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">rowcacode1</th>\
+                        <td>' + (feature.properties['rowcacode1'] !== null ? autolinker.link(feature.properties['rowcacode1'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">rowcacode2</th>\
+                        <td>' + (feature.properties['rowcacode2'] !== null ? autolinker.link(feature.properties['rowcacode2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">rowcacode3</th>\
+                        <td>' + (feature.properties['rowcacode3'] !== null ? autolinker.link(feature.properties['rowcacode3'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Shape_Leng</th>\
+                        <td>' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Shape_Area</th>\
+                        <td>' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ISO3</th>\
+                        <td>' + (feature.properties['ISO3'] !== null ? autolinker.link(feature.properties['ISO3'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ISO2</th>\
+                        <td>' + (feature.properties['ISO2'] !== null ? autolinker.link(feature.properties['ISO2'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_CommunesduNiger_1_0() {
+            return {
+                pane: 'pane_CommunesduNiger_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(215,215,215,0.23921568627450981)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_CommunesduNiger_1');
+        map.getPane('pane_CommunesduNiger_1').style.zIndex = 401;
+        map.getPane('pane_CommunesduNiger_1').style['mix-blend-mode'] = 'normal';
+        var layer_CommunesduNiger_1 = new L.geoJson(json_CommunesduNiger_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_CommunesduNiger_1',
+            layerName: 'layer_CommunesduNiger_1',
+            pane: 'pane_CommunesduNiger_1',
+            onEachFeature: pop_CommunesduNiger_1,
+            style: style_CommunesduNiger_1_0,
+        });
+        bounds_group.addLayer(layer_CommunesduNiger_1);
+        map.addLayer(layer_CommunesduNiger_1);
+        function pop_PopulationdeTahoua_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">CodeLocali</th>\
+                        <td>' + (feature.properties['CodeLocali'] !== null ? autolinker.link(feature.properties['CodeLocali'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CodeRegion</th>\
+                        <td>' + (feature.properties['CodeRegion'] !== null ? autolinker.link(feature.properties['CodeRegion'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Region</th>\
+                        <td>' + (feature.properties['Region'] !== null ? autolinker.link(feature.properties['Region'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CodeDepart</th>\
+                        <td>' + (feature.properties['CodeDepart'] !== null ? autolinker.link(feature.properties['CodeDepart'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Departemen</th>\
+                        <td>' + (feature.properties['Departemen'] !== null ? autolinker.link(feature.properties['Departemen'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CodeCom</th>\
+                        <td>' + (feature.properties['CodeCom'] !== null ? autolinker.link(feature.properties['CodeCom'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Commune</th>\
+                        <td>' + (feature.properties['Commune'] !== null ? autolinker.link(feature.properties['Commune'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NumeroLoc</th>\
+                        <td>' + (feature.properties['NumeroLoc'] !== null ? autolinker.link(feature.properties['NumeroLoc'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NomLocalit</th>\
+                        <td>' + (feature.properties['NomLocalit'] !== null ? autolinker.link(feature.properties['NomLocalit'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">POPTOT</th>\
+                        <td>' + (feature.properties['POPTOT'] !== null ? autolinker.link(feature.properties['POPTOT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">RP_MASC</th>\
+                        <td>' + (feature.properties['RP_MASC'] !== null ? autolinker.link(feature.properties['RP_MASC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">RP_FEM</th>\
+                        <td>' + (feature.properties['RP_FEM'] !== null ? autolinker.link(feature.properties['RP_FEM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MENAGE</th>\
+                        <td>' + (feature.properties['MENAGE'] !== null ? autolinker.link(feature.properties['MENAGE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MENAGRICOL</th>\
+                        <td>' + (feature.properties['MENAGRICOL'] !== null ? autolinker.link(feature.properties['MENAGRICOL'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LONGITUDE</th>\
+                        <td>' + (feature.properties['LONGITUDE'] !== null ? autolinker.link(feature.properties['LONGITUDE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LATITUDE</th>\
+                        <td>' + (feature.properties['LATITUDE'] !== null ? autolinker.link(feature.properties['LATITUDE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MILIEU</th>\
+                        <td>' + (feature.properties['MILIEU'] !== null ? autolinker.link(feature.properties['MILIEU'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TYPELOCALI</th>\
+                        <td>' + (feature.properties['TYPELOCALI'] !== null ? autolinker.link(feature.properties['TYPELOCALI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_PopulationdeTahoua_2_0(feature) {
+            if (feature.properties['POPTOT'] >= 1007.000000 && feature.properties['POPTOT'] <= 5083.000000 ) {
+                return {
+                pane: 'pane_PopulationdeTahoua_2',
+                radius: 1.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,120,180,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['POPTOT'] >= 5083.000000 && feature.properties['POPTOT'] <= 9159.000000 ) {
+                return {
+                pane: 'pane_PopulationdeTahoua_2',
+                radius: 2.75,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,120,180,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['POPTOT'] >= 9159.000000 && feature.properties['POPTOT'] <= 13235.000000 ) {
+                return {
+                pane: 'pane_PopulationdeTahoua_2',
+                radius: 4.5,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,120,180,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['POPTOT'] >= 13235.000000 && feature.properties['POPTOT'] <= 17311.000000 ) {
+                return {
+                pane: 'pane_PopulationdeTahoua_2',
+                radius: 6.25,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,120,180,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['POPTOT'] >= 17311.000000 && feature.properties['POPTOT'] <= 21387.000000 ) {
+                return {
+                pane: 'pane_PopulationdeTahoua_2',
+                radius: 8.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,120,180,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_PopulationdeTahoua_2');
+        map.getPane('pane_PopulationdeTahoua_2').style.zIndex = 402;
+        map.getPane('pane_PopulationdeTahoua_2').style['mix-blend-mode'] = 'normal';
+        var layer_PopulationdeTahoua_2 = new L.geoJson(json_PopulationdeTahoua_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_PopulationdeTahoua_2',
+            layerName: 'layer_PopulationdeTahoua_2',
+            pane: 'pane_PopulationdeTahoua_2',
+            onEachFeature: pop_PopulationdeTahoua_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_PopulationdeTahoua_2_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_PopulationdeTahoua_2);
+        map.addLayer(layer_PopulationdeTahoua_2);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Le Niger sur le Web_demo</h2>';
+            };
+            title.addTo(map);
+            var abstract = new L.Control({'position':'bottomright'});
+            abstract.onAdd = function (map) {
+                this._div = L.DomUtil.create('div',
+                'leaflet-control abstract');
+                this._div.id = 'abstract'
+
+                    abstract.show();
+                    return this._div;
+                };
+                abstract.show = function () {
+                    this._div.classList.remove("abstract");
+                    this._div.classList.add("abstractUncollapsed");
+                    this._div.innerHTML = 'La carte demo du Niger pour partage sur le web';
+            };
+            abstract.addTo(map);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Population de Tahoua<br /><table><tr><td style="text-align: center;"><img src="legend/PopulationdeTahoua_2_100750830.png" /></td><td>1007 - 5083</td></tr><tr><td style="text-align: center;"><img src="legend/PopulationdeTahoua_2_508391591.png" /></td><td>5083 - 9159</td></tr><tr><td style="text-align: center;"><img src="legend/PopulationdeTahoua_2_9159132352.png" /></td><td>9159 - 13235</td></tr><tr><td style="text-align: center;"><img src="legend/PopulationdeTahoua_2_13235173113.png" /></td><td>13235 - 17311</td></tr><tr><td style="text-align: center;"><img src="legend/PopulationdeTahoua_2_17311213874.png" /></td><td>17311 - 21387</td></tr></table>': layer_PopulationdeTahoua_2,'<img src="legend/CommunesduNiger_1.png" /> Communes du Niger': layer_CommunesduNiger_1,"OSM Standard": layer_OSMStandard_0,}).addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
